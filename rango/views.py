@@ -10,4 +10,4 @@ def index(request):
 
 
 def about(request):
-    return HttpResponse("about page")
+    return render(request, "rango/about.html", {"name": "Gabor"})
