@@ -1,4 +1,5 @@
 import os
+import random
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "twd_project.settings")
 
@@ -49,7 +50,7 @@ def populate():
         c = add_cat(category, 0, 0)
 
         for p in category_data["pages"]:
-            add_page(c, p["title"], p["url"])
+            add_page(c, p["title"], p["url"], random.randint(0,10))
 
         for c in Category.objects.all():
             for p in Page.objects.filter(category=c):
