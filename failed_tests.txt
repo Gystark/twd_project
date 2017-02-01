@@ -15,3 +15,5 @@ NoSuchElementException: Message: no such element: Unable to locate element: {"me
   (Session info: chrome=55.0.2883.87)
   (Driver info: chromedriver=2.25.426923 (0390b88869384d6eb0d5d09729679f934aab9eed),platform=Windows NT 10.0.14393 x86_64)
 
+AttributeError: 'module' object has no attribute 'tests_chapter9' for all chapter 9
+AttributeError: 'module' object has no attribute 'tests_chapter10' for all chapter 10
