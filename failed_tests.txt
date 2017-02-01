@@ -1,0 +1,17 @@
+ERROR: test_cleaned_data_from_add_page (rango.tests_chapter7.Chapter7LiveServerTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\server_tests_assessed\temporal\rango\tests_chapter7.py", line 159, in test_cleaned_data_from_add_page
+    username_field = self.browser.find_element_by_name('title')
+  File "C:\WinPython2_7\python-2.7.12.amd64\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 365, in find_element_by_name
+    return self.find_element(by=By.NAME, value=name)
+  File "C:\WinPython2_7\python-2.7.12.amd64\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 752, in find_element
+    'value': value})['value']
+  File "C:\WinPython2_7\python-2.7.12.amd64\lib\site-packages\selenium\webdriver\remote\webdriver.py", line 236, in execute
+    self.error_handler.check_response(response)
+  File "C:\WinPython2_7\python-2.7.12.amd64\lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 192, in check_response
+    raise exception_class(message, screen, stacktrace)
+NoSuchElementException: Message: no such element: Unable to locate element: {"method":"name","selector":"title"}
+  (Session info: chrome=55.0.2883.87)
+  (Driver info: chromedriver=2.25.426923 (0390b88869384d6eb0d5d09729679f934aab9eed),platform=Windows NT 10.0.14393 x86_64)
+

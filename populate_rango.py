@@ -1,5 +1,4 @@
 import os
-import random
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "twd_project.settings")
 
@@ -41,16 +40,15 @@ def populate():
         {"title": "Flask",
          "url": "http://flask.pocoo.org"}]
 
-    cats = {"Python": {"pages": python_pages},
-            "Django": {"pages": django_pages},
-
-            "Other Frameworks": {"pages": other_pages}}
+    cats = {"Python": {"pages": python_pages, "views": 128, "likes": 64},
+            "Django": {"pages": django_pages, "views": 64, "likes": 32},
+            "Other Frameworks": {"pages": other_pages, "views": 32, "likes": 16}}
 
     for category, category_data in cats.items():
-        c = add_cat(category, 0, 0)
+        c = add_cat(category, category_data['views'], category_data['likes'])
 
         for p in category_data["pages"]:
-            add_page(c, p["title"], p["url"], random.randint(0,10))
+            add_page(c, p["title"], p["url"])
 
         for c in Category.objects.all():
             for p in Page.objects.filter(category=c):
@@ -59,18 +57,18 @@ def populate():
 
 def add_page(cat, title, url, views=0):
     p = Page.objects.get_or_create(category=cat, title=title)[0]
-    p.url=url
-    p.views=views
+    p.url = url
+    p.views = views
     p.save()
     return p
 
 
-def add_cat(name, view, likes):
-     c = Category.objects.get_or_create(name=name)[0]
-     c.views = view
-     c.likes = likes
-     c.save()
-     return c
+def add_cat(name, views, likes):
+    c = Category.objects.get_or_create(name=name)[0]
+    c.views = views
+    c.likes = likes
+    c.save()
+    return c
 
 
 if __name__ == '__main__':

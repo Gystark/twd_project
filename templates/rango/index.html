@@ -1,58 +1,48 @@
+{% extends "rango/base.html" %}
 {% load staticfiles %}
+{% block body_block %}
+    <h1>Rango says...</h1>
+    <div>
+        Hey there partner
+    </div>
+    <h2>
+        Most Liked Categories
+    </h2>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Rango</title>
-</head>
+    <div>
+        {% if categories %}
+            <ul>
+                {% for category in categories %}
+                    <li>
+                        <a href="{% url "show_category" category.slug %}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
 
-<body>
-<h1>Rango says...</h1>
-<div>
-   Hey there partner
-</div>
-<h2>
-    Most Liked Categories
-</h2>
+            </ul>
+        {% else %}
+            <strong>There are no categories present.</strong>
+        {% endif %}
 
-<div>
-    {% if categories %}
-        <ul>
-            {% for category in categories %}
-                <li>
-                    <a href="{% url "view_category" category.slug %}">{{ category.name }}</a>
-                </li>
-            {% endfor %}
+        <h2>
+            Most Viewed Pages
+        </h2>
+        {% if pages %}
+            <ul>
+                {% for page in pages %}
+                    <li>
+                        <a>{{ page.title }}</a>
+                    </li>
+                {% endfor %}
 
-        </ul>
-    {% else %}
-        <strong>There are no categories present.</strong>
-    {% endif %}
+            </ul>
+        {% else %}
+            <strong>
+                There are no pages here
+            </strong>
+        {% endif %}
 
-<h2>
-    Most Viewed Pages
-</h2>
-{% if most_viewed_pages %}
-    <ul>
-        {% for page in most_viewed_pages %}
-            <li>
-            <a>{{ page.title }}</a>
-            </li>
-        {% endfor %}
-
-    </ul>
-    {% else %}
-    <strong>
-    There are no pages here
-    </strong>
-{% endif %}
-
-</div>
-
-<div>
-    <a href="{% url "about" %}">About Rango</a><br/>
-    <a href="/add_category/">Add a New Category</a><br />
+    </div>
+    <div>
     <img src="{% static "images/rango.jpg" %}" alt="Picture of Rango"/>
 </div>
-</body>
-</html>
+{% endblock %}

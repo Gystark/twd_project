@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render, HttpResponse
 from rango.models import Category, Page
 from .forms import CategoryForm, PageForm
@@ -7,9 +8,9 @@ def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
     context_dict = {'categories': category_list}
 
-    most_viewed_pages = Page.objects.order_by("-views")[:3]
+    most_viewed_pages = Page.objects.order_by("-views")[:5]
 
-    context_dict["most_viewed_pages"] = most_viewed_pages
+    context_dict["pages"] = most_viewed_pages
 
     # Render the response and send it back!
     return render(request, 'rango/index.html', context_dict)
@@ -19,7 +20,7 @@ def about(request):
     return render(request, "rango/about.html", {"name": "Gabor"})
 
 
-def view_category(request, category_name_slug):
+def show_category(request, category_name_slug):
     context = {}
 
     try:
@@ -73,7 +74,7 @@ def add_page(request, category_name_slug):
                 page.category = category
                 page.views = 0
                 page.save()
-                return view_category(request, category_name_slug)
+                return show_category(request, category_name_slug)
         else:
             print form.errors
     return render(request, "rango/add_page.html", {"form": form, "category": category})
