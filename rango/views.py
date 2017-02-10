@@ -10,6 +10,9 @@ from .forms import CategoryForm, PageForm, UserForm, UserProfileForm
 
 
 def get_server_side_cookie(request, cookie, default_val=None):
+    """
+    Get the value of a server-side cookie
+    """
     val = request.session.get(cookie)
     if not val:
         val = default_val
@@ -17,10 +20,10 @@ def get_server_side_cookie(request, cookie, default_val=None):
 
 
 def visitor_cookie_handler(request):
-    # Get the number of visits to the site.
-    # We use the COOKIES.get() function to obtain the visits cookie.
-    # If the cookie exists, the value returned is casted to an integer.
-    # If the cookie doesn't exist, then the default value of 1 is used.
+    """
+    Handle the visitor cookies.
+    """
+    # Get the number of visits from the session cookie
     visits = int(get_server_side_cookie(request, 'visits', '1'))
 
     last_visit_cookie = get_server_side_cookie(request, 'last_visit', str(datetime.now()) )
@@ -41,6 +44,9 @@ def visitor_cookie_handler(request):
 
 
 def index(request):
+    """
+    View the 5 most liked categories and the 5 most viewed pages.
+    """
     request.session.set_test_cookie()
 
     category_list = Category.objects.order_by('-likes')[:5]
@@ -58,6 +64,10 @@ def index(request):
 
 
 def about(request):
+    """
+    About page view, which displays the author name, the number of visits
+    and a cute cat picture.
+    """
     if request.session.test_cookie_worked():
         print("TEST COOKIE WORKED!")
         request.session.delete_test_cookie()
@@ -73,6 +83,10 @@ def about(request):
 
 
 def show_category(request, category_name_slug):
+    """
+    Show a category based on its slug if it exists,
+    along with all pages in that category.
+    """
     context = {}
 
     try:
@@ -135,14 +149,14 @@ def add_page(request, category_name_slug):
 
 
 def register(request):
-    # A boolean value for telling the template whether the registration was successful.
-    # Set to False initially. Code changes value to True when registration succeeds.
+    """
+    Simple registration view.
+    """
     registered = False
 
     # If it's a HTTP POST, we're interested in processing form data.
     if request.method == 'POST':
-        # Attempt to grab information from the raw form information.
-        # Note that we make use of both UserForm and UserProfileForm.
+        # Get data from both forms
         user_form = UserForm(data=request.POST)
         profile_form = UserProfileForm(data=request.POST)
 
@@ -151,41 +165,29 @@ def register(request):
             # Save the user's form data to the database.
             user = user_form.save()
 
-            # Now we hash the password with the set_password method.
-            # Once hashed, we can update the user object.
+            # Hash and save the password
             user.set_password(user.password)
             user.save()
 
-            # Now sort out the UserProfile instance.
-            # Since we need to set the user attribute ourselves,
-            # we set commit=False. This delays saving the model
-            # until we're ready to avoid integrity problems.
+            # Save the user profile and link it to the user
             profile = profile_form.save(commit=False)
             profile.user = user
 
-            # Did the user provide a profile picture?
-            # If so, we need to get it from the input form and
-            # put it in the UserProfile model.
+            # If there is an uploaded avatr, set it as the user's profile picture
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
 
-            # Now we save the UserProfile model instance.
             profile.save()
 
-            # Update our variable to indicate that the template
-            # registration was successful.
             registered = True
         else:
-            # Invalid form or forms - mistakes or something else?
-            # Print problems to the terminal.
+            # Print the form errors
             print(user_form.errors, profile_form.errors)
     else:
-        # Not a HTTP POST, so we render our form using two ModelForm instances.
-        # These forms will be blank, ready for user input.
+        # Not HTTP POST, so display the forms
         user_form = UserForm()
         profile_form = UserProfileForm()
 
-    # Render the template depending on the context.
     return render(request,
                   'rango/register.html',
                   {'user_form': user_form,
@@ -194,53 +196,48 @@ def register(request):
 
 
 def user_login(request):
+    """
+    Hanlde loging users in.
+    """
     # If the request is a HTTP POST, try to pull out the relevant information.
     if request.method == 'POST':
-        # Gather the username and password provided by the user.
-        # This information is obtained from the login form.
-        # We use request.POST.get('') as opposed to request.POST[''], because the
-        # request.POST.get('') returns None if the value does not exist, while request.POST['']
-        # will raise a KeyError exception.
+        # Get the username and password
         username = request.POST.get('username')
         password = request.POST.get('password')
-        # Use Django's machinery to attempt to see if the username/password
-        # combination is valid - a User object is returned if it is.
+        # Authenticate using Django's built-in method
         user = authenticate(username=username, password=password)
 
         # If we have a User object, the details are correct.
-        # If None (Python's way of representing the absence of a value), no user
-        # with matching credentials was found.
         if user:
             # Is the account active? It could have been disabled.
             if user.is_active:
-                # If the account is valid and active, we can log the user in.
-                # We'll send the user back to the homepage.
+                # Call Django's login method and return to the index view
                 login(request, user)
                 return HttpResponseRedirect(reverse('index'))
             else:
-                # An inactive account was used - no logging in!
                 return HttpResponse("Your Rango account is disabled.")
         else:
             # Bad login details were provided. So we can't log the user in.
             print("Invalid login details: {0}, {1}".format(username, password))
             return HttpResponse("Invalid login details supplied.")
-
-            # The request is not a HTTP POST, so display the login form.
-            # This scenario would most likely be a HTTP GET.
+    # Only HTTP POST requests are dealt with, others just render the login page
     else:
-        # No context variables to pass to the template system, hence the
-        # blank dictionary object...
         return render(request, 'rango/login.html', {})
 
 
 @login_required
 def restricted(request):
+    """
+    A view only visible to logged in users.
+    """
     return render(request, "rango/restricted.html", {})
 
 
 @login_required
 def user_logout(request):
-    # Since we know the user is logged in, we can now just log them out.
+    """
+    Handle logging users out using the built-in logout method
+    """
     logout(request)
-    # Take the user back to the homepage.
+    # Return to the index page
     return HttpResponseRedirect(reverse('index'))
